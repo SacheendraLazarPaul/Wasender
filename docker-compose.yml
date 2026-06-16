@@ -1,0 +1,21 @@
+# Run WaSender in Docker, on the same network as your OpenWA stack.
+# Prereq: OpenWA is already running (its compose creates the "openwa-network").
+# Usage:  OPENWA_API_KEY=your-key docker compose up -d --build
+services:
+  wasender:
+    build: .
+    container_name: wasender
+    ports:
+      - "3000:3000"
+    environment:
+      - OPENWA_URL=http://openwa-api:2785          # reach OpenWA by container name
+      - OPENWA_API_KEY=${OPENWA_API_KEY}
+      - SESSION_ID=test1
+      - WEBHOOK_URL=http://wasender:3000/webhook    # OpenWA reaches us by container name
+      # - APP_PASSWORD=change-me                    # uncomment to require a login
+    restart: unless-stopped
+
+networks:
+  default:
+    name: openwa-network
+    external: true
